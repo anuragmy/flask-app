@@ -1,5 +1,5 @@
 import * as actionTypes from "./types";
-
+import { message } from 'antd'
 // actions
 
 import axios from "axios";
@@ -29,34 +29,41 @@ export const SignedInError = (data) => ({
 
 export const signIn = (email, password) => async (dispatch) => {
   await axios
-    .post("http://localhost:5000/sign-in", {
+    .post("/sign-in", {
       email: email,
       password: password,
     })
     .then((res) => {
-      console.log("res", res.data);
+
       if (res.data) {
-        localStorage.setItem("token", res.data.token);
         return dispatch(
           SignedIn({ user: res.data.user, token: res.data.token })
         );
       }
+      else if (res.data && res.data.statusCode === 401) {
+        return message.info('Something went wrong, please try again')
+      }
     })
-    .catch((err) => dispatch(SignedInError(err)));
+    .catch((err) => {
+      message.error('unexpected error, please try again')
+      dispatch(SignedInError(err));
+    });
 };
 
 export const signUp = (email, password) => async (dispatch) => {
   await axios
-    .post("http://localhost:5000/sign-up", {
+    .post("/sign-up", {
       email: email,
       password: password,
     })
     .then((res) => {
-      console.log("res", res.data);
       if (res.data) {
         return dispatch(
           SignedIn({ user: res.data.user, token: res.data.token })
         );
+      }
+      else if (res.data && res.data.statusCode === 401) {
+        return message.info('Already registered, please sign in')
       }
     })
     .catch((err) => dispatch(SignedInError(err)));
@@ -64,7 +71,7 @@ export const signUp = (email, password) => async (dispatch) => {
 
 
 
-export const upload = (data, token) => async (dispatch) => {
+export const upload = (data, token, name) => async (dispatch) => {
   const config = {
     headers: {
       "content-type": "multipart/form-data",
@@ -72,9 +79,9 @@ export const upload = (data, token) => async (dispatch) => {
     },
   };
   await axios
-    .post("http://localhost:5000/image_upload", { image: data }, config)
+    .post("/image_upload", { image: data, name, }, config)
     .then((res) => {
-      console.log("res", res.data);
+
     })
     .catch((err) => console.log(err));
 };
@@ -82,14 +89,13 @@ export const upload = (data, token) => async (dispatch) => {
 export const getPics = (token) => async (dispatch) => {
   const config = {
     headers: {
-      "content-type": "multipart/form-data",
       "x-access-token": token,
     },
   };
   await axios
-    .get("http://localhost:5000/images", config)
+    .get("/images", config)
     .then((res) => {
-      console.log("res", res.data);
+
       dispatch(getAllPics(res.data))
     })
     .catch((err) => console.log(err));

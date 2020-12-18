@@ -9,6 +9,8 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 import datetime
 import jwt
 from functools import wraps
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
@@ -22,6 +24,8 @@ app.config['JWT_SECRET_KEY'] = 'python321@%'  # change this IRL
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 cors = CORS(app)
+limiter = Limiter(app, key_func=get_remote_address)
+limiter.init_app(app)
 
 
 def token_required(f):
@@ -60,12 +64,16 @@ def db_drop():
 
 @app.route('/sign-up', methods=['POST'])
 @cross_origin()
+@limiter.exempt
 def sign_up():
     data = request.get_json()
     email = data['email']
     check_email = User.query.filter_by(email=email).first()
     if check_email:
-        return jsonify(message="user already registered, please sign in")
+        return jsonify({
+            'message': "user already registered, please sign in",
+            'statusCode': 401
+        })
     else:
 
         hashed_password = generate_password_hash(data['password'],
@@ -88,11 +96,13 @@ def sign_up():
             'message': 'signed in',
             "email": user.email,
             "user_id": user.user_id,
-            'token': token.decode('UTF-8')
-        })
+            'token': token.decode('UTF-8'),
+            'statusCode': 200,
+        }), 200
 
 
 @app.route('/sign-in', methods=["POST"])
+@limiter.exempt
 @cross_origin()
 def sign_in():
     data = request.get_json()
@@ -100,7 +110,7 @@ def sign_in():
     user = User.query.filter_by(email=email).first()
     if user:
         if check_password_hash(user.password, data['password']):
-            print('passowrd matcj')
+            print('passowrd match')
             # create token
             token = jwt.encode(
                 {
@@ -123,19 +133,24 @@ def sign_in():
 
 @app.route('/image_upload', methods=['POST'])
 @cross_origin()
+@limiter.limit('5/minute')
 @token_required
 def image_upload(current_user):
 
     data = request.get_json(force=True)
     image = data['image']
-    new_image = Images(image_id=current_user.user_id, image_string=image)
+    name = data['name']
+    new_image = Images(image_id=current_user.user_id,
+                       image_string=image,
+                       image_name=name)
     db.session.add(new_image)
     db.session.commit()
-    return jsonify({'message': 'image saved!', 'image': data})
+    return jsonify({'message': 'image saved!'})
 
 
 @app.route('/images', methods=['GET'])
 @cross_origin()
+@limiter.limit('5/minute')
 @token_required
 def images(current_user):
     all_images = Images.query.filter_by(image_id=current_user.user_id).all()
@@ -158,6 +173,7 @@ class Images(db.Model):
     __tablename__ = 'images'
     id = Column(Integer, primary_key=True)
     image_id = Column(String)
+    image_name = Column(String)
     image_string = Column(String)
 
 

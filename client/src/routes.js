@@ -4,7 +4,6 @@ import {
   Route,
   Switch,
   Redirect,
-  useHistory
 } from "react-router-dom";
 import { connect } from "react-redux";
 import Home from "./components/Home";
@@ -17,12 +16,10 @@ import PrivateRoute from './privateRoute'
 
 
 const Routes = ({ token }) => {
-  const history = useHistory();
   return (
     <>
-      <Header history={history} />
       <Router>
-
+        <Header />
         <Switch>
           <Route exact component={Home} path="/" />
           <PrivateRoute exact component={Dashboard} path="/dashboard" />

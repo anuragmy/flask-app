@@ -2,7 +2,7 @@
 import React from "react";
 import { Grid, Container, LinearProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-
+import { message } from 'antd'
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { signUp } from "../actions";
@@ -73,18 +73,19 @@ const SignUp = () => {
           password: "red",
         },
       });
-    if (!confirmPassword && password !== confirmPassword)
-      return setState({
-        ...state,
-        errors: { confirmPassword: "Password do not match" },
-        color: {
-          email: "black",
-          name: "black",
-          password: "black",
+    if (!confirmPassword || password !== confirmPassword)
+      return message.info('Passwords do not match')
+    // return setState({
+    //   ...state,
+    //   errors: { confirmPassword: "Password do not match" },
+    //   color: {
+    //     email: "black",
+    //     name: "black",
+    //     password: "black",
 
-          confirmPassword: "red",
-        },
-      });
+    //     confirmPassword: "red",
+    //   },
+    // });
     return true;
   };
 

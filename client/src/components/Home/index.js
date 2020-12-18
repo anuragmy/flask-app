@@ -49,13 +49,14 @@ const Home = ({ token, pics }) => {
         setLoading(false);
         setShowSuccess(true);
         setShow(false);
-        dispatch(upload(url, token))
+        dispatch(upload(url, token, file.name))
         notification.success({
           message: 'Image Uploaded',
           description:
             'Image has been successfully uploaded',
           duration: 2,
         })
+        setTimeout(() => history.push('/images'), 1000)
       });
     });
     setFile();
@@ -101,13 +102,6 @@ const Home = ({ token, pics }) => {
           </Header>
           {token ? (
             <>
-              {/* <Uploader
-                appearance="primary"
-                listType="picture-text"
-                defaultFileList={[]}
-                onChange={handleChange}
-                action="//jsonplaceholder.typicode.com/posts/"
-              /> */}
 
               <input type="file" onChange={handleChange} accept="image/*" />
               {show && (
@@ -123,7 +117,7 @@ const Home = ({ token, pics }) => {
                     marginTop: 20,
                   }}
                 >
-                  Submit
+                  Upload
                 </Button>
               )}
 
