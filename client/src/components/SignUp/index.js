@@ -2,6 +2,7 @@
 import React from "react";
 import { Grid, Container, LinearProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { signUp } from "../actions";
@@ -11,9 +12,9 @@ const SignUp = () => {
   const dispatch = useDispatch();
 
   const [state, setState] = React.useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
+    email: "anuragmy@hotmail.com",
+    password: "anurag",
+    confirmPassword: "anurag",
     errors: [],
     color: {
       email: "black",
@@ -25,7 +26,7 @@ const SignUp = () => {
 
   const [loading] = React.useState(false);
 
-  const { errors, color, name, email, password } = state;
+  const { errors, color, email, password } = state;
 
   const handleChange = (e) =>
     setState({ ...state, [e.target.name]: e.target.value });
@@ -100,8 +101,10 @@ const SignUp = () => {
           confirmPassword: "black",
         },
       });
-      dispatch(signUp(name, email, password));
+
     }
+    console.log('called')
+    dispatch(signUp(email, password));
   };
 
   return loading ? (
@@ -198,6 +201,8 @@ const SignUp = () => {
                 Sign Up
             </span>
             </a>
+
+
             <h3>
               Already have an account?{" "}
               <Link to="/signin" style={{ color: "black" }}>

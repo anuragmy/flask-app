@@ -4,38 +4,47 @@ import {
   Route,
   Switch,
   Redirect,
+  useHistory
 } from "react-router-dom";
 import { connect } from "react-redux";
 import Home from "./components/Home";
 import Header from "./components/Header";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
+import Dashboard from "./components/Dashboard";
+import UploadedPics from "./components/UploadedPics";
+import PrivateRoute from './privateRoute'
 
 
-const Routes = ({ signedIn }) => {
+const Routes = ({ token }) => {
+  const history = useHistory();
   return (
-    <Router>
-      <Header />
-      <Switch>
-        <Route exact component={Home} path="/" />
-        <Route
-          exact
-          path="/signin"
-          render={() => (signedIn ? <Redirect to="/" /> : <SignIn />)}
-        />
-        <Route
-          exact
-          path="/signup"
-          render={() => (signedIn ? <Redirect to="/" /> : <SignUp />)}
-        />
-      </Switch>
-    </Router>
+    <>
+      <Header history={history} />
+      <Router>
+
+        <Switch>
+          <Route exact component={Home} path="/" />
+          <PrivateRoute exact component={Dashboard} path="/dashboard" />
+          <PrivateRoute exact component={UploadedPics} path="/images" />
+          <Route
+            exact
+            path="/signin"
+            render={() => (token ? <Redirect to="/" /> : <SignIn />)}
+          />
+          <Route
+            exact
+            path="/signup"
+            render={() => (token ? <Redirect to="/" /> : <SignUp />)}
+          />
+        </Switch>
+      </Router>
+    </>
   );
 };
 
 const mapStateToProps = (state) => ({
-  signedIn: state.auth.token,
-  user: state.auth.user,
+  token: state.auth.token,
 });
 
 export default connect(mapStateToProps, null)(Routes);

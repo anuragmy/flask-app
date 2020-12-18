@@ -1,48 +1,44 @@
 import React from "react";
-import { Link, useHistory } from "react-router-dom";
-import { Input, Menu } from 'semantic-ui-react'
+import { useHistory } from "react-router-dom";
+import { Menu } from "semantic-ui-react";
 
 import { useDispatch, connect } from "react-redux";
-import { signOut, signIn } from "../actions";
+import { SignOut, signIn } from "../actions";
 
 import "./header.styles.scss";
-
 
 const Header = ({ token }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [activeItem, setActiveItem] = React.useState('home')
+  console.log(history)
 
+  const [activeItem, setActiveItem] = React.useState("home");
 
-  const handleItemClick = (e, { name }) => {
-    setActiveItem(name);
-    if (name === 'logout') return dispatch(signOut())
-    if (name === 'home') return history.push('/')
-    else history.push('/signin')
+  const handleItemClick = (e) => {
 
-  }
+    // if (name === 'logout') dispatch(signOut())
+    // else if (name === 'home') history.push('/')
+    // else history.push('/signin')
+  };
 
   return (
     <Menu secondary style={{ padding: 20 }}>
-      <Menu.Item
-        name='home'
-        onClick={handleItemClick}
-      />
+      <Menu.Item name="home" />
 
-      <Menu.Menu position='right'>
-        <Menu.Item
-          name={token ? 'logout' : 'login'}
-          active={activeItem === 'logout'}
-          onClick={handleItemClick}
-        />
+      <Menu.Menu position="right">
+        {token ? (
+          <Menu.Item name="logout" onClick={() => dispatch(SignOut())} />
+        ) : (
+            <Menu.Item name="login" onClick={() => history.push('/signin')} />
+          )}
       </Menu.Menu>
     </Menu>
   );
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth.token
-})
+const mapStateToProps = (state) => ({
+  token: state.auth.token,
+});
 
 export default connect(mapStateToProps)(Header);

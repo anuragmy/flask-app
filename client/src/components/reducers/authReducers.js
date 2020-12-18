@@ -2,7 +2,7 @@ import * as actionTypes from "../actions/types";
 
 const initialState = {
   signedIn: false,
-  user: "",
+  email: '',
   token: "",
   authLoading: false,
   error: "",
@@ -10,12 +10,13 @@ const initialState = {
 
 export const checkSignedIn = (state = initialState, action) => {
   const { payload, type } = action;
+  console.log(payload)
   switch (type) {
     case actionTypes.SIGNEDIN:
       return {
         ...state,
         signedIn: true,
-        user: payload.user,
+        user: payload.email,
         token: payload.token,
         authLoading: false,
       };

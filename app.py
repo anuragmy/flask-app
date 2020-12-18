@@ -9,6 +9,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 import datetime
 import jwt
 from functools import wraps
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
@@ -20,6 +21,7 @@ app.config['JWT_SECRET_KEY'] = 'python321@%'  # change this IRL
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+cors = CORS(app)
 
 
 def token_required(f):
@@ -57,6 +59,7 @@ def db_drop():
 
 
 @app.route('/sign-up', methods=['POST'])
+@cross_origin()
 def sign_up():
     data = request.get_json()
     email = data['email']
@@ -76,17 +79,21 @@ def sign_up():
         # create token
         token = jwt.encode(
             {
-                'user_id': user.user_id,
+                'user_id':
+                user.user_id,
                 'exp':
-                datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+                datetime.datetime.utcnow() + datetime.timedelta(minutes=3600)
             }, app.config['JWT_SECRET_KEY'])
         return jsonify({
             'message': 'signed in',
+            "email": user.email,
+            "user_id": user.user_id,
             'token': token.decode('UTF-8')
         })
 
 
 @app.route('/sign-in', methods=["POST"])
+@cross_origin()
 def sign_in():
     data = request.get_json()
     email = data['email']
@@ -104,6 +111,8 @@ def sign_in():
                 }, app.config['JWT_SECRET_KEY'])
             return jsonify({
                 'message': 'signed in',
+                "email": user.email,
+                "user_id": user.user_id,
                 'token': token.decode('UTF-8')
             })
         else:
@@ -113,16 +122,20 @@ def sign_in():
 
 
 @app.route('/image_upload', methods=['POST'])
+@cross_origin()
 @token_required
 def image_upload(current_user):
-    image = request.get_json()['image']
+
+    data = request.get_json(force=True)
+    image = data['image']
     new_image = Images(image_id=current_user.user_id, image_string=image)
     db.session.add(new_image)
     db.session.commit()
-    return jsonify({'message': 'image saved!'})
+    return jsonify({'message': 'image saved!', 'image': data})
 
 
 @app.route('/images', methods=['GET'])
+@cross_origin()
 @token_required
 def images(current_user):
     all_images = Images.query.filter_by(image_id=current_user.user_id).all()
