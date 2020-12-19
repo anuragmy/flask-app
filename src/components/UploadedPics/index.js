@@ -9,7 +9,7 @@ import axios from 'axios'
 import { getPics } from '../actions'
 
 
-const UpoadedPics = ({ pics, token }) => {
+const UpoadedPics = ({ auth }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -24,13 +24,15 @@ const UpoadedPics = ({ pics, token }) => {
         const list = [];
         const imagesList = snapshot.val();
         for (let id in imagesList) {
-          let data = {
-            id: imagesList[id]['id'],
-            url: imagesList[id]['url'],
+          if (imagesList[id]['id'] === auth.user_id) {
+            let data = {
+              id: imagesList[id]['id'],
+              url: imagesList[id]['url'],
+            }
+            list.push(data);
           }
-          list.push(data);
+          setImages(list)
         }
-        setImages(list)
       })
     };
     getImages();
@@ -52,8 +54,7 @@ const UpoadedPics = ({ pics, token }) => {
 }
 
 const mstp = state => ({
-  pics: state.pics,
-  token: state.auth.token
+  auth: state.auth
 });
 
 export default connect(mstp)(UpoadedPics);
