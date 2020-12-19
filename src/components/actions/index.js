@@ -29,7 +29,7 @@ export const SignedInError = (data) => ({
 
 export const signIn = (email, password) => async (dispatch) => {
   await axios
-    .post("/sign-in", {
+    .post("https://flask-app-pic-upload.herokuapp.com/sign-in", {
       email: email,
       password: password,
     })
@@ -51,7 +51,7 @@ export const signIn = (email, password) => async (dispatch) => {
 
 export const signUp = (email, password) => async (dispatch) => {
   await axios
-    .post("/sign-up", {
+    .post("https://flask-app-pic-upload.herokuapp.com/sign-up", {
       email: email,
       password: password,
     })
@@ -78,7 +78,7 @@ export const upload = (data, token, name) => async (dispatch) => {
     },
   };
   await axios
-    .post("/image_upload", { image: data, name, }, config)
+    .post("https://flask-app-pic-upload.herokuapp.com/image_upload", { image: data, name, }, config)
     .then((res) => {
       console.log('posted')
     })

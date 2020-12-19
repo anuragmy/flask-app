@@ -25,7 +25,7 @@ const Header = ({ token }) => {
 
   return (
     <Menu secondary style={{ padding: 20 }}>
-      <Menu.Item name="home" />
+      <Menu.Item name="home" onClick={() => history.push('/')} />
 
       <Menu.Menu position="right">
         {token ? (
