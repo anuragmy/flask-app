@@ -104,7 +104,7 @@ const SignUp = () => {
       });
 
     }
-    console.log('called')
+
     dispatch(signUp(email, password));
   };
 
