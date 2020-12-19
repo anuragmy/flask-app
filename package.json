@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install-server":"cd api && pip install -r requirements.txt",
+    "install-client":"npm install --prefix client",
     "app":"concurrently \" cd api && flask run \" \" npm start ---prefix client  \""
   },
   "repository": {
