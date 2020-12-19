@@ -17,6 +17,6 @@ this will install pip files for the flask
 
 this will install dependencies for react 
 
-3. then run <code>npm run app</code>
+5. then run <code>npm run app</code>
 
 this will run flask and react together 
