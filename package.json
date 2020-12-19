@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "install-server":"cd api && pip install -r requirements.txt",
     "app":"concurrently \" cd api && flask run \" \" npm start ---prefix client  \""
   },
   "repository": {
